@@ -1,0 +1,465 @@
+{
+  "name": "Sabor Local - Chatbot Completo",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Você é um assistente de CEP, receba o CEP e devolva as informações do endereço para o usuário"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        112
+      ],
+      "id": "779b7345-90a4-4ea7-8136-a4ba7bd678e1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        304
+      ],
+      "id": "105d18db-9aa4-4963-b35d-c0c79a0d5d19",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9fb7xKwAw45WEbyT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        320
+      ],
+      "id": "1d480139-bd33-491c-b397-baf2c3c0a1f9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1376,
+        112
+      ],
+      "id": "abc427a4-5c9b-4d40-8102-bedcdfcbd674",
+      "name": "Send a text message1",
+      "webhookId": "2eacaa97-c54d-4c11-adc8-79955ed51ee2",
+      "credentials": {
+        "telegramApi": {
+          "id": "rZdBNGdRLtMUlCkQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.update_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        320
+      ],
+      "id": "f5d539b4-6194-45c8-bfe8-706dad324bf3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca o status dos pedidos do restaurante\n",
+        "url": "https://x8ki-letl-twmt.n7.xano.io/api:N5W6Wi0C/BuscarPedidos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        400,
+        496
+      ],
+      "id": "805767ac-e001-4365-893a-9f69b4fb83c7",
+      "name": "BuscarPedidos"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca os pratos, cardápio e preços do restaurante\n",
+        "url": "=https://x8ki-letl-twmt.n7.xano.io/api:N5W6Wi0C/produtos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        560
+      ],
+      "id": "67eba263-820a-43fa-bdf9-fe055068c496",
+      "name": "BuscarPratos"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').first().json.message.chat.id }}\n\n",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        256
+      ],
+      "id": "e6b79893-b5ce-47af-934a-45e58fb245c1",
+      "name": "Send a text message",
+      "webhookId": "6258c44a-5a77-4eae-a45f-2c958ca4ce10",
+      "credentials": {
+        "telegramApi": {
+          "id": "rZdBNGdRLtMUlCkQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b55b9a27-5375-46c5-9523-e84e7f36ed4a",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        256
+      ],
+      "id": "e352771b-9446-41eb-92f7-0786c300447c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "={{ $json.mensagem }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a37145f6-d2c2-4873-9a90-cef97f6ae6bd",
+      "name": "Message",
+      "webhookId": "6e079f35-dc2f-4252-a7bc-688c530eef2e",
+      "credentials": {
+        "telegramApi": {
+          "id": "rZdBNGdRLtMUlCkQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = `Oi! Bem-vindo ao Sabor Local! 😊\nAqui você encontra comida mineira autêntica feita com carinho há 5 anos.\n\nPosso te ajudar com:\n- 🍽️ Cardápio e preços\n- 🤤 Sugestões de prato\n- 📦 Status do seu pedido\n- 🕐 Horários e endereço\n\nÉ só perguntar, uai!`;\n\nreturn [{ json: { mensagem: text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "088d3b34-16ee-4cdd-9cf8-63bc1560f445",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca informações sobre horário de funcionamento, endereço, formas de pagamento, entrega, estacionamento e reservas do restaurante.",
+        "url": "=https://x8ki-letl-twmt.n7.xano.io/api:ISmCmIUq/chamar",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        400
+      ],
+      "id": "0306b0d1-8a1d-4a3a-b340-f7595c4e2dd5",
+      "name": "BuscarFAQ"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        416
+      ],
+      "id": "b017b7e5-1b8d-45c5-a5d7-0acc7a1f710c",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger1').item.json.message.text }}\nAssistente do Sabor Local (comida mineira).\n\nCardápio/preço → BuscarPratos\nSepare cada prato com uma linha em branco entre eles.\nPedido/status → BuscarPedidos\nCliente pedir recomendação ou disser o que gosta → use BuscarPratos\ne sugira o prato mais adequado ao gosto descrito, explicando por que\ncombina com ele\n\n- Horário, endereço, pagamento, entrega, estacionamento, reserva → SEMPRE use BuscarFaq obrigatoriamente antes de responder, nunca responda sem consultar\n\nColoque emoji nos pratos sem exagero, apenas 1 por prato\nResponda simpático e informal.\nUse formatação HTML simples:\n\n<b>texto</b> para negrito\n<i>texto</i> para itálico\nListas com • (bullet point) em vez de traço\nNão use Markdown, <br>, asteriscos ou underlines.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        256
+      ],
+      "id": "1db9192d-84da-49a1-a1c8-d52a9dcfb03f",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -624,
+        256
+      ],
+      "id": "4e7579ba-b665-48f9-95b0-f5ec1375ea03",
+      "name": "Telegram Trigger1",
+      "webhookId": "b432a0ae-fd2b-438e-b68b-a0f2eb424da9",
+      "credentials": {
+        "telegramApi": {
+          "id": "rZdBNGdRLtMUlCkQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        416
+      ],
+      "id": "8b39ff78-825c-4399-85ae-33cda8d3b8f0",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9fb7xKwAw45WEbyT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscarPratos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscarPedidos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscarFAQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c1884fb8-3eeb-4b67-bed2-74942e289542",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5768116ac1e0228ceb2b22b5370d18de27099c9e0cee1c36e72649ccb60ab6cd"
+  },
+  "id": "5cxWISj8zOzYB5FF",
+  "tags": []
+}
